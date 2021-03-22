@@ -9,3 +9,61 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Load the tidyverse:
+```{r}
+library(tidyverse)
+```
+Read in the data:
+```{r}
+dat <- read_csv("data/raw/2017_super-rugby_try-source-data.csv")
+```
+Check for missing values and their locations:
+```{r}
+sum(is.na(dat))
+```
+```{r}
+naniar::vis_miss(dat)
+```
+Create exploratory graphs to visualise the univariate distribution (i.e. variation in single variables) for the following variables: attacking_team, game_time, try_source, final_source, possession_zone, time_from_source:
+```{r}
+ggplot(data = dat) +
+  geom_bar(mapping = aes(x = attacking_team), colour = "black", fill = "chartreuse")
+```
+```{r}
+ggplot(data = dat) +
+  geom_histogram(mapping = aes(x = game_time), bins = 20, colour = "magenta")
+```
+```{r}
+ggplot(data = dat) +
+  geom_bar(mapping = aes(x = try_source), fill = "dodgerblue")
+```
+```{r}
+ggplot(data = dat) +
+  geom_bar(mapping = aes(x = final_source), fill = "magenta")
+```
+```{r}
+ggplot(data = dat) +
+  geom_histogram(mapping = aes(x = time_from_source), bins = 20)
+```
+```{r}
+ggplot(data = dat) +
+  geom_bar(mapping = aes(x = possession_zone), colour = "green")
+```
+Create charts exploring 2 variables at once:
+```{r}
+ggplot(data = dat) +
+geom_point(mapping = aes(x = game_time, y = time_from_source, shape = try_source)) +
+  facet_wrap(~ possession_zone, nrow = 2)
+```
+Create some summary stats of continuos variables:
+```{r}
+summary <- dat %>%
+  group_by(attacking_rank) %>%
+  summarise_at(vars("time_from_source", "total_passes"), mean)
+```
+
+```{r}
+ggplot(data = summary) +
+  geom_col(mapping = aes(x = attacking_rank, y = total_passes))
+```
+
